@@ -10,7 +10,7 @@ const HelloWorld = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('http://localhost:8000/hello');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/hello`);
       setMessage(response.data.message);
     } catch (err) {
       setError('Failed to fetch message from backend');

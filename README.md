@@ -30,13 +30,44 @@ feature-flags/
 
 ## Prerequisites
 
+### For Docker Setup:
+- Docker
+- Docker Compose
+
+### For Local Development:
 - Python 3.8+ 
 - Node.js 18+
 - npm or yarn
 
 ## Setup Instructions
 
-### Backend Setup
+### Option 1: Docker Compose (Recommended)
+
+1. Make sure Docker and Docker Compose are installed on your system.
+
+2. Clone the repository and navigate to the project directory:
+   ```bash
+   cd feature-flags
+   ```
+
+3. Build and start both services:
+   ```bash
+   docker-compose up --build
+   ```
+
+4. Access the application:
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:8000`
+   - API Documentation: `http://localhost:8000/docs`
+
+5. To stop the services:
+   ```bash
+   docker-compose down
+   ```
+
+### Option 2: Local Development
+
+#### Backend Setup
 
 1. Navigate to the backend directory:
    ```bash
@@ -69,7 +100,7 @@ feature-flags/
 
    The backend will be available at `http://localhost:8000`
 
-### Frontend Setup
+#### Frontend Setup
 
 1. Navigate to the frontend directory:
    ```bash
@@ -120,21 +151,68 @@ feature-flags/
 - **Frontend**: React, Vite, Axios
 - **Development**: Hot reload, CORS support
 
+## Docker Commands
+
+### Basic Commands
+```bash
+# Build and start services
+docker-compose up --build
+
+# Start services in background
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs
+
+# View logs for specific service
+docker-compose logs backend
+docker-compose logs frontend
+
+# Rebuild specific service
+docker-compose build backend
+docker-compose build frontend
+
+# Remove containers and volumes
+docker-compose down -v
+```
+
+### Development Commands
+```bash
+# Start with live reload (development mode)
+docker-compose up --build
+
+# Access container shell
+docker-compose exec backend bash
+docker-compose exec frontend sh
+```
+
 ## Troubleshooting
 
+### Docker Issues
+- Ensure Docker and Docker Compose are installed and running
+- Check that ports 3000 and 8000 are not in use
+- Try rebuilding containers: `docker-compose down && docker-compose up --build`
+- Check container logs: `docker-compose logs`
+
 ### Backend Issues
-- Ensure Python virtual environment is activated
+- Ensure Python virtual environment is activated (local development)
 - Check that port 8000 is not in use
 - Verify all dependencies are installed
+- For Docker: Check backend container logs
 
 ### Frontend Issues
-- Ensure Node.js and npm are installed
+- Ensure Node.js and npm are installed (local development)
 - Check that port 3000 is not in use
 - Verify backend is running on port 8000
+- For Docker: Check frontend container logs
 
 ### CORS Issues
-- Backend CORS is configured for `localhost:3000`
-- If using a different port, update CORS settings in `backend/main.py`
+- Backend CORS is configured for multiple origins including Docker containers
+- If using different ports, update CORS settings in `backend/main.py`
+- For Docker: CORS is pre-configured for container networking
 
 ## Next Steps
 
