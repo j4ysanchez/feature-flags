@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import uvicorn
+import json
+import os
 
 # Create FastAPI app
 app = FastAPI(
@@ -23,6 +26,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Feature Flag System
+class FeatureFlag(BaseModel):
+    name: str
+    enabled: bool
+    description: str = ""
+
+# load feature flags from a file
+FEATURE_FLAGS_FILE = os.path.join(os.path.dirname(__file__), 'feature_flags.json')
+
+def load_feature_flags():
+    with open(FEATURE_FLAGS_FILE, 'r') as f:
+        return json.load(f)
+
+FEATURE_FLAGS = load_feature_flags()
+
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -37,6 +55,28 @@ async def hello():
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "FastAPI Backend"}
+
+# Feature Flag Endpoints
+@app.get("/feature-flags")
+async def get_all_feature_flags():
+    """Get all feature flags"""
+    return {"feature_flags": list(FEATURE_FLAGS.values())}
+
+@app.get("/feature-flags/{flag_name}")
+async def get_feature_flag(flag_name: str):
+    """Get a specific feature flag by name"""
+    if flag_name not in FEATURE_FLAGS:
+        raise HTTPException(status_code=404, detail=f"Feature flag '{flag_name}' not found")
+    
+    return {"feature_flag": FEATURE_FLAGS[flag_name]}
+
+@app.get("/feature-flags/{flag_name}/enabled")
+async def is_feature_enabled(flag_name: str):
+    """Check if a specific feature flag is enabled"""
+    if flag_name not in FEATURE_FLAGS:
+        raise HTTPException(status_code=404, detail=f"Feature flag '{flag_name}' not found")
+    
+    return {"enabled": FEATURE_FLAGS[flag_name].enabled}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

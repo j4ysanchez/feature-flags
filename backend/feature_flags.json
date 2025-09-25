@@ -1,0 +1,6 @@
+{
+    "welcome_message": {
+        "enabled": true,
+        "description": "Enables personalized welcome messages"
+    }
+}
