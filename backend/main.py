@@ -32,6 +32,10 @@ class FeatureFlag(BaseModel):
     enabled: bool
     description: str = ""
 
+class WelcomeRequest(BaseModel):
+    name: str
+
+
 # load feature flags from a file
 FEATURE_FLAGS_FILE = os.path.join(os.path.dirname(__file__), 'feature_flags.json')
 
@@ -59,8 +63,8 @@ async def health_check():
 # Feature Flag Endpoints
 @app.get("/feature-flags")
 async def get_all_feature_flags():
-    """Get all feature flags"""
-    return {"feature_flags": list(FEATURE_FLAGS.values())}
+    """List all feature flags and their status"""
+    return {"feature_flags": FEATURE_FLAGS}
 
 @app.get("/feature-flags/{flag_name}")
 async def get_feature_flag(flag_name: str):
@@ -68,7 +72,7 @@ async def get_feature_flag(flag_name: str):
     if flag_name not in FEATURE_FLAGS:
         raise HTTPException(status_code=404, detail=f"Feature flag '{flag_name}' not found")
     
-    return {"feature_flag": FEATURE_FLAGS[flag_name]}
+    return {f"{flag_name}": FEATURE_FLAGS[flag_name]}
 
 @app.get("/feature-flags/{flag_name}/enabled")
 async def is_feature_enabled(flag_name: str):
@@ -77,6 +81,18 @@ async def is_feature_enabled(flag_name: str):
         raise HTTPException(status_code=404, detail=f"Feature flag '{flag_name}' not found")
     
     return {"enabled": FEATURE_FLAGS[flag_name].enabled}
+
+@app.post("/welcome")
+async def welcome_user(request: WelcomeRequest):
+    """Welcome endpoint that returns a personalized welcome message"""
+
+    if not FEATURE_FLAGS.get("welcome_message", {}).get("enabled", False):
+        raise HTTPException(status_code=404, detail="Feature flag 'welcome_message' is not enabled")
+
+    if not request.name.strip():
+        raise HTTPException(status_code=400, detail="Name is required")
+    
+    return {"message": f"Welcome {request.name}!"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
