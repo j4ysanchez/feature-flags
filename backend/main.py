@@ -18,6 +18,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", 
         "http://127.0.0.1:3000",  # React dev server
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
         "http://frontend:80",     # Docker container
         "http://localhost:80"     # Docker mapped port
     ],
@@ -80,7 +82,7 @@ async def is_feature_enabled(flag_name: str):
     if flag_name not in FEATURE_FLAGS:
         raise HTTPException(status_code=404, detail=f"Feature flag '{flag_name}' not found")
     
-    return {"enabled": FEATURE_FLAGS[flag_name].enabled}
+    return {"enabled": FEATURE_FLAGS[flag_name]['enabled']}
 
 @app.post("/welcome")
 async def welcome_user(request: WelcomeRequest):
