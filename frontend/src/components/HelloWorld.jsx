@@ -47,12 +47,14 @@ const HelloWorld = () => {
   };
 
   const handleWelcomeUser = async () => {
+
+    console.log('Handling welcome user:', userName);
     if (!userName.trim()) {
       setError('Please enter a name');
       return;
     }
 
-    setWelcomeMessageLoading(true);
+    setWelcomeLoading(true);
     setError('');
     try {
       const response = await axios.post(`${API_BASE}/welcome`, { name: userName });
@@ -65,7 +67,7 @@ const HelloWorld = () => {
         console.error('Error:', err);
       }
     } finally {
-      setWelcomeMessageLoading(false);
+      setWelcomeLoading(false);
     }
   }
 
@@ -107,7 +109,6 @@ return (
         </p>
       )}
     
-
     <button
       onClick={fetchMessage}
       disabled={loading}
@@ -164,9 +165,10 @@ return (
                       fontSize: '1rem'
                     }}
                   />
+                  {console.log('Welcome loading:', welcomeLoading)}
                   <button 
                     onClick={handleWelcomeUser}
-                    disabled={welcomeLoading || !userName.trim()}
+                    // disabled={welcomeLoading || !userName.trim()}
                     style={{
                       backgroundColor: '#4CAF50',
                       color: 'white',

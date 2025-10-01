@@ -43,7 +43,7 @@ FEATURE_FLAGS_FILE = os.path.join(os.path.dirname(__file__), 'feature_flags.json
 
 def load_feature_flags():
     with open(FEATURE_FLAGS_FILE, 'r') as f:
-        return json.load(f)
+        return json.load(f) 
 
 FEATURE_FLAGS = load_feature_flags()
 
